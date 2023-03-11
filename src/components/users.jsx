@@ -5,9 +5,8 @@ import api from '../api'
 const Users = ()=> {
     const [users, setUsers] = useState (api.users.fetchAll())
 
-    const handleDelete = (event) => {
-        const clickedUserId = event.target.id
-        setUsers(prevState => prevState.filter(user => user._id!==clickedUserId))
+    const handleDelete = (userId) => {
+        setUsers(prevState => prevState.filter(user => user._id !== userId))
     }
     const renderPhrase = (number) => {
         const str = String(number)
@@ -17,26 +16,26 @@ const Users = ()=> {
             return <h1><span className="badge bg-danger"> Никто с тобой не тусанет</span></h1>
         }
         if (['2', '3', '4'].includes(lastNumber) && lastSecondNumber !=='1' )  {
-            return <h1><span className="badge bg-primary"> {number} человека тусанут с тобой сегодня</span></h1>
+            return <h2><span className="badge bg-primary"> {number} человека тусанут с тобой сегодня</span></h2>
         } else {
-            return <h1> <span className="badge bg-primary">{number} человек тусанет с тобой сегодня</span></h1>
+            return <h2> <span className="badge bg-primary">{number} человек тусанет с тобой сегодня</span></h2>
         }
     }
 
     const renderTablesUserInfo = () => {
-        return users.map((user, index) =>(
-            <tr>
-                <td key='0' className = ''> {user.name} </td>
-                <td key='1' className = ''> { renderQualities(user.qualities)} </td>
-                <td key= '2'> {user.profession.name}</td>
-                <td key= '3'> {user.completedMeetings}</td>
-                <td key= '4'> {user.rate}</td>
-                <td key='5'>
+        return users.map((user) =>(
+            <tr key={user._id}>
+                <td> {user.name} </td>
+                <td> { renderQualities(user.qualities)} </td>
+                <td> {user.profession.name}</td>
+                <td> {user.completedMeetings}</td>
+                <td> {user.rate}</td>
+                <td>
                     <button
                     id = {user._id}
                     type="button"
                     className="btn btn-danger"
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(user._id)}
                     >
                         delete
                     </button>
@@ -50,6 +49,7 @@ const Users = ()=> {
         return qualities.map ( (item) => (
             <span
                 className={'m-2 badge bg-' + item.color}
+                key={item._id}
             >
                 {item.name}
             </span>)
@@ -62,12 +62,12 @@ const Users = ()=> {
             <table className="table">
                 <thead>
                 <tr>
-                    <th scope="col" key = '00'> Имя </th>
-                    <th scope="col" key = '02'>Качества</th>
-                    <th scope="col" key = '03'>Профессия</th>
-                    <th scope="col" key = '04'>Встретился, раз</th>
-                    <th scope="col" key = '05'>Оценка</th>
-                    <th scope="col" key = '06'> </th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Качества</th>
+                    <th scope="col">Профессия</th>
+                    <th scope="col">Встретился, раз</th>
+                    <th scope="col">Оценка</th>
+                    <th scope="col"> </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -80,7 +80,7 @@ const Users = ()=> {
     return (
         <>
             {renderPhrase(users.length)}
-            {users.length !== 0 ? renderTableFinal() : ''}
+            {users.length !== 0 ? renderTableFinal() : null}
         </>
     )
 }
