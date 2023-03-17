@@ -2,7 +2,7 @@ import React from "react";
 import User from "./user";
 import 'bootstrap/dist/css/bootstrap.css';
 
-const Users = ({users, onDelete, bookmarkInfo, bookmarkChange})=> {
+const Users = ({users, onDelete, onToggleBookmark})=> {
 
     const renderTableHead = () => {
         return (
@@ -26,8 +26,7 @@ const Users = ({users, onDelete, bookmarkInfo, bookmarkChange})=> {
                 key = {user._id}
                 user={user}
                 onDelete = {onDelete}
-                bookmarkInfo = {bookmarkInfo[index]}
-                bookmarkChange = {bookmarkChange}
+                onToggleBookmark = {onToggleBookmark}
             />
             )
         ))
@@ -46,7 +45,7 @@ const Users = ({users, onDelete, bookmarkInfo, bookmarkChange})=> {
 
     return (
         <>
-            {users.length !== 0 ? renderTableFinal() : null}
+            {users.length >0 && renderTableFinal()}
         </>
     )
 }

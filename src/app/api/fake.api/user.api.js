@@ -129,5 +129,3 @@ const users = [
 export function fetchAll() {
     return users
 }
-
-// console.log(users[0])

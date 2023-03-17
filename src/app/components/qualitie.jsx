@@ -6,8 +6,8 @@ const Quality = function (qualities) {
             className={'m-2 badge bg-' + item.color}
             key={item._id}
         >
-                {item.name}
-            </span>)
+            {item.name}
+        </span>)
     )
 }
 
