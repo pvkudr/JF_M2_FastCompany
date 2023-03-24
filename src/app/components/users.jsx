@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import User from './user';
 import 'bootstrap/dist/css/bootstrap.css';
 import Pagination from './pagination';
 import { paginate } from '../utils/paginate';
 import PropTypes from 'prop-types';
+import { PAGE_SIZE } from '../utils/constants';
 
-const Users = ({ users, onDelete, onToggleBookmark }) => {
+const Users = ({ users, onDelete, onToggleBookmark, currentPage, onPageChange }) => {
     const userNumber = users.length;
-    const PAGE_SIZE = 4;
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const handlePageChange = (pageIndex) => {
-        setCurrentPage(pageIndex);
-    };
 
     const userCrop = paginate(users, currentPage, PAGE_SIZE);
 
@@ -58,7 +53,7 @@ const Users = ({ users, onDelete, onToggleBookmark }) => {
             <Pagination
                 itemsCount={userNumber}
                 pageSize={PAGE_SIZE}
-                onPageChange={handlePageChange}
+                onPageChange={onPageChange}
                 currentPage={currentPage}
             />
         </>
@@ -68,7 +63,9 @@ const Users = ({ users, onDelete, onToggleBookmark }) => {
 Users.propTypes = {
     users: PropTypes.array.isRequired,
     onDelete: PropTypes.func.isRequired,
-    onToggleBookmark: PropTypes.func.isRequired
+    onToggleBookmark: PropTypes.func.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    onPageChange: PropTypes.func.isRequired
 };
 
 export default Users;
