@@ -1,16 +1,9 @@
 import React from 'react';
 import User from './user';
 import 'bootstrap/dist/css/bootstrap.css';
-import Pagination from './pagination';
-import { paginate } from '../utils/paginate';
 import PropTypes from 'prop-types';
-import { PAGE_SIZE } from '../utils/constants';
 
-const Users = ({ users, onDelete, onToggleBookmark, currentPage, onPageChange }) => {
-    const userNumber = users.length;
-
-    const userCrop = paginate(users, currentPage, PAGE_SIZE);
-
+const Users = ({ userCrop, onDelete, onToggleBookmark }) => {
     const renderTableHead = () => {
         return (
             <thead>
@@ -49,23 +42,14 @@ const Users = ({ users, onDelete, onToggleBookmark, currentPage, onPageChange })
 
     return (
         <>
-            {userNumber > 0 && renderTableFinal()}
-            <Pagination
-                itemsCount={userNumber}
-                pageSize={PAGE_SIZE}
-                onPageChange={onPageChange}
-                currentPage={currentPage}
-            />
-        </>
-    );
+            {userCrop.length > 0 && renderTableFinal()}
+        </>);
 };
 
 Users.propTypes = {
-    users: PropTypes.array.isRequired,
+    userCrop: PropTypes.array.isRequired,
     onDelete: PropTypes.func.isRequired,
-    onToggleBookmark: PropTypes.func.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired
+    onToggleBookmark: PropTypes.func.isRequired
 };
 
 export default Users;
