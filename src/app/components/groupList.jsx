@@ -6,25 +6,31 @@ const GroupList = ({
     onItemSelect,
     valueProperty,
     contentProperty,
-    selectedItem
+    selectedItem,
+    onClearButtonClick
 }) => {
     const itemsToArray = Array.isArray(items) ? [...items] : Object.values(items);
 
     return (
-        <ul className='list-group'>
-            {itemsToArray.map((item) => (
-                <li
-                    className={
-                        'list-group-item' + (item === selectedItem ? ' active' : '')
-                    }
-                    key={item[valueProperty]}
-                    onClick={() => onItemSelect(item)}
-                    role='button'
-                >
-                    {item[contentProperty]}
-                </li>
-            ))}
-        </ul>
+        <>
+            <ul className='list-group'>
+                {itemsToArray.map((item) => (
+                    <li
+                        className={
+                            'list-group-item' + (item === selectedItem ? ' active' : '')
+                        }
+                        key={item[valueProperty]}
+                        onClick={() => onItemSelect(item)}
+                        role='button'
+                    >
+                        {item[contentProperty]}
+                    </li>
+                ))}
+            </ul>
+            <button className='btn btn-secondary mt-2 mr-2' onClick={onClearButtonClick}>
+                Очистить фильтр
+            </button>
+        </>
     );
 };
 
@@ -38,7 +44,8 @@ GroupList.propTypes = {
     valueProperty: PropTypes.string.isRequired,
     contentProperty: PropTypes.string.isRequired,
     onItemSelect: PropTypes.func,
-    selectedItem: PropTypes.object
+    selectedItem: PropTypes.object,
+    onClearButtonClick: PropTypes.func.isRequired
 };
 
 export default GroupList;
