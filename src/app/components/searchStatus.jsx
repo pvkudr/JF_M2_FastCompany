@@ -8,14 +8,14 @@ const SearchStatus = ({ length }) => {
     if (length === 0) {
         return (
             <h1>
-                <span className="badge bg-danger"> Никто с тобой не тусанет</span>
+                <span className='badge bg-danger'> Никто с тобой не тусанет</span>
             </h1>
         );
     }
     if (['2', '3', '4'].includes(lastNumber) && lastSecondNumber !== '1') {
         return (
             <h2>
-                <span className="badge bg-primary">
+                <span className='badge bg-primary'>
                     {' '}
                     {length} человека тусанут с тобой сегодня
                 </span>
@@ -25,7 +25,7 @@ const SearchStatus = ({ length }) => {
         return (
             <h2>
                 {' '}
-                <span className="badge bg-primary">
+                <span className='badge bg-primary'>
                     {length} человек тусанет с тобой сегодня
                 </span>
             </h2>
