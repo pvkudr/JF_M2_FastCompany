@@ -83,39 +83,41 @@ function AllContent() {
 
     if (usersToShow.length) {
         return (
-            (<div className='d-flex'>
-                {professions && (
-                    <div className="d-flex flex-column flex-shrink-0 p-3">
-                        <GroupList
-                            items={professions}
-                            onItemSelect={handleProfessionSelect}
-                            selectedItem={selectedProf}
-                            onClearButtonClick={clearFilter}
+            <>
+                <div className='d-flex'>
+                    {professions && (
+                        <div className="d-flex flex-column flex-shrink-0 p-3">
+                            <GroupList
+                                items={professions}
+                                onItemSelect={handleProfessionSelect}
+                                selectedItem={selectedProf}
+                                onClearButtonClick={clearFilter}
+                            />
+                            <ButtonClearAll
+                                onClearAllButtonClick={clearAll}
+                            />
+                        </div>)
+                    }
+                    <div className="d-flex flex-column">
+                        <SearchStatus length={filteredUsers.length}/>
+                        <UsersTable
+                            usersToShow={usersToShow}
+                            onDelete={handleDelete}
+                            onToggleBookmark={handleToggleBookMark}
+                            onSort={handleSort}
+                            currentSort={sortBy}
                         />
-                        <ButtonClearAll
-                            onClearAllButtonClick={clearAll}
-                        />
-                    </div>)
-                }
-                <div className="d-flex flex-column">
-                    <SearchStatus length={filteredUsers.length}/>
-                    <UsersTable
-                        usersToShow={usersToShow}
-                        onDelete={handleDelete}
-                        onToggleBookmark={handleToggleBookMark}
-                        onSort={handleSort}
-                        currentSort={sortBy}
-                    />
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            itemsCount={filteredUsers.length}
-                            pageSize={PAGE_SIZE}
-                            onPageChange={handlePageChange}
-                            currentPage={currentPage}
-                        />
+                        <div className="d-flex justify-content-center">
+                            <Pagination
+                                itemsCount={filteredUsers.length}
+                                pageSize={PAGE_SIZE}
+                                onPageChange={handlePageChange}
+                                currentPage={currentPage}
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>)
+            </>
 
         );
     } else return 'loading...';
