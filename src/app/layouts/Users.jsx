@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import UsersTable from './usersTable';
-import SearchStatus from './searchStatus';
-import api from '../api/';
+import UsersTable from '../components/usersTable';
+import SearchStatus from '../components/searchStatus';
+import api from '../api';
 import { PAGE_SIZE } from '../utils/constants';
 import { paginate } from '../utils/paginate';
-import GroupList from './groupList';
-import Pagination from './pagination';
-import ButtonClearAll from './buttonClearAll';
+import GroupList from '../components/groupList';
+import Pagination from '../components/pagination';
+import ButtonClearAll from '../components/buttonClearAll';
 import _ from 'lodash';
+import UserPage from '../components/userPage';
+import { useParams } from 'react-router-dom';
 
-function AllContent() {
+function Users(props) {
     // FETCH THE DATA
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -81,46 +83,55 @@ function AllContent() {
     const handlePageChange = (pageIndex) => { setCurrentPage(pageIndex); };
     const usersToShow = paginate(filteredUsers, currentPage, PAGE_SIZE);
 
+    // USER PAGE
+    const params = useParams();
+    const { userId } = params;
+    const user = users.filter((user) => user._id === userId);
+
+    if (userId) {
+        return <UserPage user = { user[0] } />;
+    }
+
     if (usersToShow.length) {
-        return (
-            <>
-                <div className='d-flex'>
-                    {professions && (
-                        <div className="d-flex flex-column flex-shrink-0 p-3">
-                            <GroupList
-                                items={professions}
-                                onItemSelect={handleProfessionSelect}
-                                selectedItem={selectedProf}
-                                onClearButtonClick={clearFilter}
+            return (
+                <>
+                    <div className='d-flex'>
+                        {professions && (
+                            <div className="d-flex flex-column flex-shrink-0 p-3">
+                                <GroupList
+                                    items={professions}
+                                    onItemSelect={handleProfessionSelect}
+                                    selectedItem={selectedProf}
+                                    onClearButtonClick={clearFilter}
+                                />
+                                <ButtonClearAll
+                                    onClearAllButtonClick={clearAll}
+                                />
+                            </div>)
+                        }
+                        <div className="d-flex flex-column">
+                            <SearchStatus length={filteredUsers.length}/>
+                            <UsersTable
+                                usersToShow={usersToShow}
+                                onDelete={handleDelete}
+                                onToggleBookmark={handleToggleBookMark}
+                                onSort={handleSort}
+                                currentSort={sortBy}
                             />
-                            <ButtonClearAll
-                                onClearAllButtonClick={clearAll}
-                            />
-                        </div>)
-                    }
-                    <div className="d-flex flex-column">
-                        <SearchStatus length={filteredUsers.length}/>
-                        <UsersTable
-                            usersToShow={usersToShow}
-                            onDelete={handleDelete}
-                            onToggleBookmark={handleToggleBookMark}
-                            onSort={handleSort}
-                            currentSort={sortBy}
-                        />
-                        <div className="d-flex justify-content-center">
-                            <Pagination
-                                itemsCount={filteredUsers.length}
-                                pageSize={PAGE_SIZE}
-                                onPageChange={handlePageChange}
-                                currentPage={currentPage}
-                            />
+                            <div className="d-flex justify-content-center">
+                                <Pagination
+                                    itemsCount={filteredUsers.length}
+                                    pageSize={PAGE_SIZE}
+                                    onPageChange={handlePageChange}
+                                    currentPage={currentPage}
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </>
+                </>
 
-        );
-    } else return 'loading...';
+            );
+        } else return 'Loading...';
 };
 
-export default AllContent;
+export default Users;

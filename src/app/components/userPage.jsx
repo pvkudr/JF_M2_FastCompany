@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import api from '../api';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import Qualities from './qualities';
+import PropTypes from 'prop-types';
 
-const UserPage = () => {
-    const params = useParams();
-    const { userId } = params;
-    const [user, setUser] = useState({});
-
-    useEffect(() => {
-        api.users.getById(userId).then((data) => setUser(data));
-    }, [userId]);
-
+const UserPage = ({ user }) => {
+    console.log('user from user', user);
     return (
         <div>
             {user && user.name
@@ -41,6 +34,9 @@ const UserPage = () => {
             )}
         </div>
     );
+};
+UserPage.propTypes = {
+    user: PropTypes.object.isRequired
 };
 
 export default UserPage;

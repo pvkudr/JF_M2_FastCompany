@@ -1,10 +1,9 @@
 import React from 'react';
-import AllContent from './components/allContent';
+import Users from './layouts/Users';
 import { Route, Switch } from 'react-router-dom';
 import Main from './layouts/main';
 import Login from './layouts/login';
 import NavBar from './components/navBar';
-import UserPage from './components/userPage';
 
 function App() {
     return (
@@ -13,10 +12,9 @@ function App() {
             <Switch>
                 <Route exact path = '/' component = {Main} />
                 <Route path = '/login' component = {Login} />
-                <Route exact path = '/users' component = {AllContent} />
                 <Route
                     path = '/users/:userId?'
-                    render = {(props) => (<UserPage {...props} />)}
+                    render = {(props) => (<Users {...props} />)}
                 />
             </Switch>
 
