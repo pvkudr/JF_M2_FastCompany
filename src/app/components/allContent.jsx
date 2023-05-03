@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import UsersTable from '../components/usersTable';
-import SearchStatus from '../components/searchStatus';
+import UsersTable from './usersTable';
+import SearchStatus from './searchStatus';
 import api from '../api';
 import { PAGE_SIZE } from '../utils/constants';
 import { paginate } from '../utils/paginate';
-import GroupList from '../components/groupList';
-import Pagination from '../components/pagination';
-import ButtonClearAll from '../components/buttonClearAll';
+import GroupList from './groupList';
+import Pagination from './pagination';
+import ButtonClearAll from './buttonClearAll';
 import _ from 'lodash';
-import UserPage from '../components/userPage';
-import { useParams } from 'react-router-dom';
+import SearchBar from './searchBar';
+import { searchFilter } from '../utils/searchFilter';
 
-function Users(props) {
+function AllContent() {
     // FETCH THE DATA
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -31,6 +31,7 @@ function Users(props) {
         setSelectedProf(item);
         setFilteredUsers(users.filter((user) => user.profession.name === item.name));
         setCurrentPage(1);
+        setSearchField('');
     };
 
     // CLEAR BUTTONS
@@ -38,12 +39,14 @@ function Users(props) {
         setSelectedProf();
         setFilteredUsers([...users]);
         setCurrentPage(1);
+        setSearchField('');
     };
     const clearAll = () => {
         setSelectedProf();
         api.users.fetchAll().then((data) => setUsers(data));
         api.users.fetchAll().then((data) => setFilteredUsers(data));
         setCurrentPage(1);
+        setSearchField('');
     };
 
     // DELETE
@@ -81,57 +84,66 @@ function Users(props) {
 
     // PAGINATION
     const handlePageChange = (pageIndex) => { setCurrentPage(pageIndex); };
+
+    // SEARCH
+    const [searchField, setSearchField] = useState('');
+    const handleSearchChange = (e) => {
+        const { value } = e.target;
+        setSearchField(value);
+        setFilteredUsers(searchFilter(users, value));
+        setSelectedProf();
+        setCurrentPage(1);
+    };
+
+    // USERS TO SHOW
+
     const usersToShow = paginate(filteredUsers, currentPage, PAGE_SIZE);
 
-    // USER PAGE
-    const params = useParams();
-    const { userId } = params;
-    const user = users.filter((user) => user._id === userId);
-
-    if (userId) {
-        return <UserPage user = { user[0] } />;
-    }
-
-    if (usersToShow.length) {
-            return (
-                <>
-                    <div className='d-flex'>
-                        {professions && (
-                            <div className="d-flex flex-column flex-shrink-0 p-3">
-                                <GroupList
-                                    items={professions}
-                                    onItemSelect={handleProfessionSelect}
-                                    selectedItem={selectedProf}
-                                    onClearButtonClick={clearFilter}
-                                />
-                                <ButtonClearAll
-                                    onClearAllButtonClick={clearAll}
-                                />
-                            </div>)
-                        }
-                        <div className="d-flex flex-column">
-                            <SearchStatus length={filteredUsers.length}/>
-                            <UsersTable
-                                usersToShow={usersToShow}
-                                onDelete={handleDelete}
-                                onToggleBookmark={handleToggleBookMark}
-                                onSort={handleSort}
-                                currentSort={sortBy}
+    // ////////////////////
+    if (filteredUsers.length || users.length) { // todo
+        return (
+            <>
+                <div className='d-flex'>
+                    {professions && (
+                        <div className="d-flex flex-column flex-shrink-0 p-3">
+                            <GroupList
+                                items={professions}
+                                onItemSelect={handleProfessionSelect}
+                                selectedItem={selectedProf}
+                                onClearButtonClick={clearFilter}
                             />
-                            <div className="d-flex justify-content-center">
-                                <Pagination
-                                    itemsCount={filteredUsers.length}
-                                    pageSize={PAGE_SIZE}
-                                    onPageChange={handlePageChange}
-                                    currentPage={currentPage}
-                                />
-                            </div>
+                            <ButtonClearAll
+                                onClearAllButtonClick={clearAll}
+                            />
+                        </div>)
+                    }
+                    <div className="d-flex flex-column">
+                        <SearchStatus length={filteredUsers.length}/>
+                        <SearchBar
+                            onChange = {handleSearchChange}
+                            searchField = {searchField}
+                        />
+                        <UsersTable
+                            usersToShow={usersToShow}
+                            onDelete={handleDelete}
+                            onToggleBookmark={handleToggleBookMark}
+                            onSort={handleSort}
+                            currentSort={sortBy}
+                        />
+                        <div className="d-flex justify-content-center">
+                            <Pagination
+                                itemsCount={filteredUsers.length}
+                                pageSize={PAGE_SIZE}
+                                onPageChange={handlePageChange}
+                                currentPage={currentPage}
+                            />
                         </div>
                     </div>
-                </>
+                </div>
+            </>
 
-            );
+        );
         } else return 'Loading...';
 };
 
-export default Users;
+export default AllContent;

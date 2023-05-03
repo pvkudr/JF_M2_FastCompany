@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Qualities from './qualities';
 import PropTypes from 'prop-types';
+import api from '../api';
 
-const UserPage = ({ user }) => {
-    console.log('user from user', user);
+const UserPage = ({ userId }) => {
+    const [user, setUser] = useState({});
+
+    useEffect(() => {
+        api.users.getById(userId).then((data) => setUser(data));
+    }, []);
+
     return (
         <div>
             {user && user.name
@@ -18,7 +24,7 @@ const UserPage = ({ user }) => {
                                     qualities={user.qualities}
                                 /></li>
                             <li className="list-group-item">Встреч: {user.completedMeetings}</li>
-                            <li className="list-group-item">Рейтинг {user.rate}</li>
+                            <li className="list-group-item">Рейтинг: {user.rate}</li>
                             <li className="list-group-item">В избранных: {user.bookmark.toString()}</li>
                         </ul>
                         <button
@@ -36,7 +42,7 @@ const UserPage = ({ user }) => {
     );
 };
 UserPage.propTypes = {
-    user: PropTypes.object.isRequired
+    userId: PropTypes.string.isRequired
 };
 
 export default UserPage;
