@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import UsersTable from './usersTable';
-import SearchStatus from './searchStatus';
-import api from '../api';
-import { PAGE_SIZE } from '../utils/constants';
-import { paginate } from '../utils/paginate';
-import GroupList from './groupList';
-import Pagination from './pagination';
-import ButtonClearAll from './buttonClearAll';
+import UsersTable from '../../ui/usersTable';
+import SearchStatus from '../../ui/searchStatus';
+import api from '../../../api';
+import { PAGE_SIZE } from '../../../utils/constants';
+import { paginate } from '../../../utils/paginate';
+import GroupList from '../../common/groupList';
+import Pagination from '../../common/pagination';
+import ButtonClearAll from '../../ui/buttonClearAll';
 import _ from 'lodash';
-import SearchBar from './searchBar';
-import { searchFilter } from '../utils/searchFilter';
+import SearchBar from '../../ui/searchBar';
+import { searchFilter } from '../../../utils/searchFilter';
 
-function AllContent() {
+function UserGeneralPage() {
     // FETCH THE DATA
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -87,8 +87,8 @@ function AllContent() {
 
     // SEARCH
     const [searchField, setSearchField] = useState('');
-    const handleSearchChange = (e) => {
-        const { value } = e.target;
+    const handleSearchChange = (obj) => {
+        const { value } = obj;
         setSearchField(value);
         setFilteredUsers(searchFilter(users, value));
         setSelectedProf();
@@ -146,4 +146,4 @@ function AllContent() {
         } else return 'Loading...';
 };
 
-export default AllContent;
+export default UserGeneralPage;

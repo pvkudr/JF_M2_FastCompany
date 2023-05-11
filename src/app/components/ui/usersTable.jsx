@@ -1,9 +1,9 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import PropTypes from 'prop-types';
-import BookMark from './bookmark';
-import Qualities from './qualities';
-import Table from './table';
+import BookMark from '../common/bookmark';
+import Qualities from './qualities/';
+import Table from '../common/table/';
 import { Link } from 'react-router-dom';
 
 const UsersTable = ({ usersToShow, onDelete, onToggleBookmark, onSort, currentSort }) => {
