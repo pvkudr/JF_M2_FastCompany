@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import UserPage from '../components/page/userPage';
-import UserGeneralPage from '../components/page/userGeneralPage/';
+import UserGeneralPage from '../components/page/usersGeneralPage/';
 import UserChangePage from '../components/ui/userChangePage';
+import UserMainPage from '../components/page/userPage/userMainPage';
 
 const Users = () => {
     const { userId, edit } = useParams();
@@ -12,7 +12,7 @@ const Users = () => {
             {userId
                 ? edit
                     ? <UserChangePage userId={userId}/>
-                    : <UserPage userId={userId}/>
+                    : <UserMainPage userId={userId}/>
                 : <UserGeneralPage/> }
         </>
     );

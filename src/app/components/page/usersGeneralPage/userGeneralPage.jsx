@@ -76,10 +76,10 @@ function UserGeneralPage() {
 
     // BOOKMARK
     const handleToggleBookMark = (userId) => {
-        const newArr = [...users];
+        const newArr = [...filteredUsers];
         const clickedIndex = newArr.findIndex((element) => element._id === userId);
         newArr[clickedIndex].bookmark = !newArr[clickedIndex].bookmark;
-        setUsers(newArr);
+        setFilteredUsers(newArr);
     };
 
     // PAGINATION
