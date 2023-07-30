@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import UsersTable from '../../ui/usersTable';
 import SearchStatus from '../../ui/searchStatus';
-import api from '../../../api';
 import { PAGE_SIZE } from '../../../utils/constants';
 import { paginate } from '../../../utils/paginate';
 import GroupList from '../../common/groupList';
@@ -10,18 +9,23 @@ import ButtonClearAll from '../../ui/buttonClearAll';
 import _ from 'lodash';
 import SearchBar from '../../ui/searchBar';
 import { searchFilter } from '../../../utils/searchFilter';
+import { useUser } from '../../../hooks/useUsers';
+import { useProfAndQual } from '../../../hooks/useProfAndQual';
 
 function UserGeneralPage() {
     // FETCH THE DATA
-    const [users, setUsers] = useState([]);
-    const [filteredUsers, setFilteredUsers] = useState([]);
-    const [professions, setProfession] = useState();
 
-    useEffect(() => {
-        api.users.fetchAll().then((data) => setUsers(data));
-        api.professions.fetchAll().then((data) => setProfession(data));
-        api.users.fetchAll().then((data) => setFilteredUsers(data));
-    }, []);
+    const fullUsers = useUser();
+    const [users, setUsers] = useState(useUser());
+    const [filteredUsers, setFilteredUsers] = useState(useUser());
+    const { professions, isProfLoading } = (useProfAndQual());
+
+    // useEffect(() => {
+    //     // api.users.fetchAll().then((data) => setUsers(data));
+    //     // setUsers(useUser());
+    //     // api.professions.fetchAll().then((data) => setProfession(data));
+    //     // api.users.fetchAll().then((data) => setFilteredUsers(data));
+    // }, []);
 
     // FILTER
     const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +33,7 @@ function UserGeneralPage() {
 
     const handleProfessionSelect = (item) => {
         setSelectedProf(item);
-        setFilteredUsers(users.filter((user) => user.profession.name === item.name));
+        setFilteredUsers(users.filter((user) => user.profession === item._id));
         setCurrentPage(1);
         setSearchField('');
     };
@@ -43,8 +47,8 @@ function UserGeneralPage() {
     };
     const clearAll = () => {
         setSelectedProf();
-        api.users.fetchAll().then((data) => setUsers(data));
-        api.users.fetchAll().then((data) => setFilteredUsers(data));
+        setUsers(fullUsers); // todo check
+        setFilteredUsers(fullUsers); // todo check
         setCurrentPage(1);
         setSearchField('');
     };
@@ -100,7 +104,7 @@ function UserGeneralPage() {
     const usersToShow = paginate(filteredUsers, currentPage, PAGE_SIZE);
 
     // ////////////////////
-    if (filteredUsers.length || users.length) { // todo
+    if ((filteredUsers.length & !isProfLoading) || users.length) { // todo
         return (
             <>
                 <div className='d-flex'>
