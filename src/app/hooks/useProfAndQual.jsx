@@ -22,13 +22,6 @@ const ProfessionProvider = ({ children }) => {
         getQualities();
     }, []);
 
-    useEffect(() => {
-        if (error !== null) {
-            toast(error);
-            setError(null);
-        }
-    }, [error]);
-
     // get professions
     async function getProfessions() {
         try {
@@ -73,6 +66,12 @@ const ProfessionProvider = ({ children }) => {
         const { message } = error.response.data;
         setError(message);
     }
+    useEffect(() => {
+        if (error !== null) {
+            toast(error);
+            setError(null);
+        }
+    }, [error]);
 
     return (
         <ProfessionContext.Provider

@@ -14,7 +14,9 @@ const MultiSelectField = ({
         return 'basic-multi-select' + (error ? ' is-invalid' : '');
      };
     const optionsToArray = Array.isArray(options) && typeof options === 'object'
-        ? [...options]
+        ? options.map((option) => (
+            { value: option._id, label: option.name, color: option.color }
+        ))
         : Object.values(options).map((option) => (
             { value: option._id, label: option.name, color: option.color }
         ));

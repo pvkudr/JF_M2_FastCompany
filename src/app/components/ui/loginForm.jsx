@@ -2,15 +2,26 @@ import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/textField';
 import { validator } from '../../utils/validator';
 import CheckBoxField from '../common/form/checkBoxField';
+import { useAuth } from '../../hooks/useAuth';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
 const LoginForm = () => {
     const [data, setData] = useState({ email: '', password: '', stayOn: true });
-
+    const history = useHistory();
     // SUBMIT
-    const handleSubmit = (e) => {
+
+    const { signIn } = useAuth();
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
-        console.log('data', data);
+        console.log('data_loginForm', data);
+        try {
+            await signIn(data);
+            history.push('/');
+        } catch (error) {
+            console.log('loginError', error);
+            setErrors(error);
+        }
     };
 
     // FORM CHANGE

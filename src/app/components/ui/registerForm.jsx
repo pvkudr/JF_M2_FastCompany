@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/textField';
 import { validator } from '../../utils/validator';
-import api from '../../api';
 import SelectField from '../common/form/selectField';
 import RadioField from '../common/form/radioField';
 import MultiSelectField from '../common/form/multiSelectField';
 import CheckBoxField from '../common/form/checkBoxField';
+import { useProfAndQual } from '../../hooks/useProfAndQual';
+import { useAuth } from '../../hooks/useAuth';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
 const RegisterForm = () => {
+    const history = useHistory();
+
     const [data, setData] = useState({
         email: '',
         password: '',
@@ -17,19 +21,31 @@ const RegisterForm = () => {
         licence: false
     });
 
-    const [professions, setProfession] = useState();
-    const [qualities, setQualities] = useState({});
+    const { professions, qualities, isQualLoading } = useProfAndQual();
 
-    useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfession(data));
-        api.qualities.fetchAll().then((data) => setQualities(data));
-    }, []);
+    // const [professions, setProfession] = useState();
+    // const [qualities, setQualities] = useState({});
+    //
+    // useEffect(() => {
+    //     api.professions.fetchAll().then((data) => setProfession(data));
+    //     api.qualities.fetchAll().then((data) => setQualities(data));
+    // }, []);
 
     // SUBMIT
-    const handleSubmit = (e) => {
+    const { signUp } = useAuth();
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
-        console.log('submit_data= ', data);
+        const newData = { ...data, qualities: data.qualities.map((q) => q.value) }; // to match firebase datapattern
+        // console.log('newDataRegForm= ', newData);
+        try {
+           await signUp(newData);
+           history.push('/');
+        } catch (error) {
+            // console.log('registerError', error);
+            setErrors(error);
+        }
     };
 
     // FORM CHANGE
@@ -113,13 +129,14 @@ const RegisterForm = () => {
                 name = 'sex'
                 onChange = {handleChange}
             />
+            { !isQualLoading &&
             <MultiSelectField
                 label='Choose your qualities'
                 options = {qualities}
                 onChange = {handleChange}
                 name = 'qualities'
                 defaultOption = {data.qualities}
-            />
+            />}
             <CheckBoxField
                 value = {data.licence}
                 onChange = {handleChange}

@@ -17,6 +17,7 @@ function UserGeneralPage() {
 
     const fullUsers = useUser();
     const [users, setUsers] = useState(useUser());
+    console.log('useGeneral', users);
     const [filteredUsers, setFilteredUsers] = useState(useUser());
     const { professions, isProfLoading } = (useProfAndQual());
 
