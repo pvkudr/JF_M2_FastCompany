@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import userService from '../services/user.service';
-import { setTokens } from '../services/localStorage.service';
+import localStorageService, { setTokens } from '../services/localStorage.service';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
-const httpAuth = axios.create();
+export const httpAuth = axios.create();
 const AuthContext = React.createContext();
 
 export const useAuth = () => {
@@ -13,8 +14,31 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
+    const history = useHistory();
     const [currentUser, setCurrentUser] = useState();
     const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(true);
+
+    // get current user
+    async function getUserData() {
+        try {
+            const { content } = await userService.getCurrentUser();
+            // console.log('useAuth_getUserData', content);
+            setCurrentUser(content);
+        } catch (error) {
+            errorCatcher();
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (localStorageService.getAccessToken()) {
+            getUserData();
+        } else {
+            setLoading(false);
+        }
+    }, []);
 
     // SIGN IN (already reg)
     async function signIn({ email, password }) {
@@ -23,12 +47,13 @@ const AuthProvider = ({ children }) => {
 
         try {
             const { data } = await httpAuth.post(url, { email, password, returnSecureToken: true });
-            console.log('dataUseAuth', data.localId);
+            console.log('dataUseAuth', data);
             setTokens(data);
+            await getUserData();
         } catch (error) {
             errorCatcher(error);
             const { code, message } = error.response.data.error;
-            console.log('useAuth_signIn', code, message);
+            // console.log('useAuth_signIn', code, message);
             if (code === 400) {
                 if (message === 'EMAIL_NOT_FOUND') {
                     const errorObject = {
@@ -58,13 +83,24 @@ const AuthProvider = ({ children }) => {
 
          try {
              const { data } = await httpAuth.post(url, { email, password, returnSecureToken: true });
-             console.log('dataUseAuth', data.localId);
+             // console.log('dataUseAuth', data.localId);
              setTokens(data);
-             await createUser({ _id: data.localId, email, ...rest });
+             await createUser({
+                 _id: data.localId,
+                 email,
+                 rate: 0,
+                 completedMeetings: 0,
+                 image: `https://avatars.dicebear.com/api/avataaars/${(
+                     Math.random() + 1
+                 )
+                     .toString(36)
+                     .substring(7)}.svg`,
+                 ...rest
+});
          } catch (error) {
              errorCatcher(error);
              const { code, message } = error.response.data.error;
-             console.log('useAuth', code, message);
+             // console.log('useAuth', code, message);
              if (code === 400) {
                  if (message === 'EMAIL_EXISTS') {
                      const errorObject = {
@@ -75,10 +111,19 @@ const AuthProvider = ({ children }) => {
              }
          }
     };
+
+     // SIGN OUT
+     function logOut() {
+        localStorageService.removeAuthData();
+        setCurrentUser(null);
+        history.push('/');
+     }
+
     async function createUser(data) {
         try {
-            const { content } = userService.create(data);
+            const { content } = await userService.create(data);
             setCurrentUser(content);
+            console.log('useAuth_createdUser', content);
         } catch (error) {
             errorCatcher(error);
             console.log('error', error);
@@ -97,8 +142,8 @@ const AuthProvider = ({ children }) => {
     }, [error]);
 
     return (
-        <AuthContext.Provider value={ { signUp, signIn, currentUser } }>
-            {children}
+        <AuthContext.Provider value={ { signUp, signIn, logOut, currentUser } }>
+            {!isLoading ? children : 'Loading'}
         </AuthContext.Provider>
     );
 };

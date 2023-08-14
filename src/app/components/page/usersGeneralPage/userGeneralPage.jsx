@@ -11,14 +11,16 @@ import SearchBar from '../../ui/searchBar';
 import { searchFilter } from '../../../utils/searchFilter';
 import { useUser } from '../../../hooks/useUsers';
 import { useProfAndQual } from '../../../hooks/useProfAndQual';
+import { useAuth } from '../../../hooks/useAuth';
 
 function UserGeneralPage() {
-    // FETCH THE DATA
+    // FETCH THE DATA - users except current user
+    const { currentUser } = useAuth();
 
-    const fullUsers = useUser();
-    const [users, setUsers] = useState(useUser());
-    console.log('useGeneral', users);
-    const [filteredUsers, setFilteredUsers] = useState(useUser());
+    const fullUsers = useUser().users.filter((u) => u._id !== currentUser._id);
+    const [users, setUsers] = useState(useUser().users.filter((u) => u._id !== currentUser._id));
+    console.log('useGeneral_users', fullUsers);
+    const [filteredUsers, setFilteredUsers] = useState(useUser().users.filter((u) => u._id !== currentUser._id));
     const { professions, isProfLoading } = (useProfAndQual());
 
     // useEffect(() => {
@@ -55,12 +57,14 @@ function UserGeneralPage() {
     };
 
     // DELETE
-    const handleDelete = (userId) => {
-        setUsers((prevState) => prevState.filter((user) => user._id !== userId));
-        setFilteredUsers((prevState) =>
-            prevState.filter((user) => user._id !== userId)
-        );
-    };
+    // const handleDelete = (userId) => {
+    //     setUsers((prevState) => prevState.filter((user) => user._id !== userId));
+    //     setFilteredUsers((prevState) =>
+    //         prevState.filter((user) => user._id !== userId)
+    //     );
+    // };
+
+    // todo  - check if this useEffect is connected with delete
 
     useEffect(() => {
         if ((currentPage - 1) * PAGE_SIZE === filteredUsers.length && filteredUsers.length) {
@@ -130,7 +134,6 @@ function UserGeneralPage() {
                         />
                         <UsersTable
                             usersToShow={usersToShow}
-                            onDelete={handleDelete}
                             onToggleBookmark={handleToggleBookMark}
                             onSort={handleSort}
                             currentSort={sortBy}

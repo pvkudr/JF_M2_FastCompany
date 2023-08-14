@@ -11,23 +11,15 @@ CommentNew.propTypes = {
 };
 
 function CommentNew({ onSubmit }) {
-    const [users, setUsers] = useState([]);
-    const [data, setData] = useState({
-        name: '',
-        text: ''
-    });
-
-    useEffect(() => {
-        API.users.fetchAll().then((data) => setUsers(data));
-    }, []);
+    const [data, setData] = useState({ text: '' });
 
     // SUBMIT
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate()) return;
-        const newComment = { userId: data.name, content: data.text };
+        const newComment = { content: data.text };
         onSubmit(newComment);
-        setData({ name: '', text: '' });
+        setData({ text: '' });
         setErrors({});
     };
 
@@ -43,9 +35,9 @@ function CommentNew({ onSubmit }) {
     const [errors, setErrors] = useState({});
 
     const validatorConfig = {
-        name: {
-            isRequired: { message: 'Name is required' }
-        },
+        // name: {
+        //     isRequired: { message: 'Name is required' }
+        // },
         text: {
             isRequired: { message: 'Text is required' }
         }
@@ -60,23 +52,15 @@ function CommentNew({ onSubmit }) {
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
-    if (users.length > 0) {
+
         return (
             <form onSubmit={handleSubmit}>
-                <SelectField
-                    label='Choose user'
-                    name='name'
-                    value={data.name}
-                    onChange={handleChange}
-                    defaultOption='Choose user'
-                    options={users}
-                    error={errors.name}
-                />
+
                 <TextArea
                     name='text'
                     rows='3'
                     cols='60'
-                    value={data.text}
+                    value={data.text || ''}
                     onChange={handleChange}
                     placeholder='Enter text..'
                     error={errors.text}
@@ -90,7 +74,6 @@ function CommentNew({ onSubmit }) {
                 </button>
             </form>
         );
-    }
 }
 
 export default CommentNew;
