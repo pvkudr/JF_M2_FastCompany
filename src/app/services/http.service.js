@@ -18,6 +18,8 @@ http.interceptors.request.use(
         if (configFile.isFireBase) {
             const containSlash = /\/$/gi.test(config.url);
             config.url = (containSlash ? config.url.slice(0, -1) : config.url) + '.json';
+
+            // check token refresh date & update
             const expiresDate = localStorageService.getTokenExpiresDate();
             const refreshToken = localStorageService.getRefreshToken();
             if (refreshToken && expiresDate < Date.now()) {
@@ -35,7 +37,7 @@ http.interceptors.request.use(
                     expiresIn: data.expires_in
                 });
             }
-            // CHECK IF USER IS REGISTRED
+            // CHECK IF USER IS REGISTERED
             const accessToken = localStorageService.getAccessToken();
             if (accessToken) {
                 config.params = { ...config.params, auth: accessToken };

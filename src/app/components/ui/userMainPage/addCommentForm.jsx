@@ -14,16 +14,16 @@ function AddCommentForm({ authorId, time, text, onRemove, id }) {
     const [isLoading, setIsLoading] = useState(true);
     const [userToShow, setUserToShow] = useState();
 
-    useEffect(() => {
-        setIsLoading(true);
-        API.users
-            .getById(authorId)
-            .then((data) => {
-                setUserToShow(data);
-                setIsLoading(false);
-                }
-            );
-    }, []);
+    // useEffect(() => {
+    //     setIsLoading(true);
+    //     API.users
+    //         .getById(authorId)
+    //         .then((data) => {
+    //             setUserToShow(data);
+    //             setIsLoading(false);
+    //             }
+    //         );
+    // }, []);
 
     if (!isLoading) {
         return (

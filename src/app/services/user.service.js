@@ -19,6 +19,14 @@ const userService = {
         );
         // console.log('data from user_service', data);
         return data;
+    },
+    // todo :need?
+    getUserById: async (userId) => {
+        const { data } = await httpService.get(
+            userEndpoint + userId
+        );
+        // console.log('data from user_service', data);
+        return data;
     }
 
 };

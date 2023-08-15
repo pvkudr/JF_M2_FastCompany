@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import SelectField from '../../common/form/selectField';
 import TextArea from '../../common/form/textArea';
 import { validator } from '../../../utils/validator';
-import API from '../../../api';
 
 CommentNew.propTypes = {
     users: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),

@@ -19,7 +19,7 @@ const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
     const [isLoading, setLoading] = useState(true);
 
-    // get current user
+    // GET CURRENT USER
     async function getUserData() {
         try {
             const { content } = await userService.getCurrentUser();
