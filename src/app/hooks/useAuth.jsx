@@ -111,6 +111,16 @@ const AuthProvider = ({ children }) => {
              }
          }
     };
+    async function createUser(data) {
+        try {
+            const { content } = await userService.create(data);
+            setCurrentUser(content);
+            console.log('useAuth_createdUser', content);
+        } catch (error) {
+            errorCatcher(error);
+            console.log('error', error);
+        }
+    };
 
      // SIGN OUT
      function logOut() {
@@ -119,11 +129,12 @@ const AuthProvider = ({ children }) => {
         history.push('/');
      }
 
-    async function createUser(data) {
+     // UPDATE USER
+    async function updateUserData(data) {
         try {
-            const { content } = await userService.create(data);
+            const { content } = await userService.update(data);
             setCurrentUser(content);
-            console.log('useAuth_createdUser', content);
+            console.log('useAuth_updatedUser', content);
         } catch (error) {
             errorCatcher(error);
             console.log('error', error);
@@ -142,7 +153,7 @@ const AuthProvider = ({ children }) => {
     }, [error]);
 
     return (
-        <AuthContext.Provider value={ { signUp, signIn, logOut, currentUser } }>
+        <AuthContext.Provider value={ { signUp, signIn, logOut, currentUser, updateUserData } }>
             {!isLoading ? children : 'Loading'}
         </AuthContext.Provider>
     );

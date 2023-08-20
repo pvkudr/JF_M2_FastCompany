@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import API from '../../../api';
+import { useUser } from '../../../hooks/useUsers';
+import { useAuth } from '../../../hooks/useAuth';
 
 AddCommentForm.propTypes = {
     authorId: PropTypes.string,
@@ -10,33 +11,18 @@ AddCommentForm.propTypes = {
     id: PropTypes.string
 };
 
-function AddCommentForm({ authorId, time, text, onRemove, id }) {
-    const [isLoading, setIsLoading] = useState(true);
-    const [userToShow, setUserToShow] = useState();
+function AddCommentForm({ time, text, onRemove, id, authorId }) {
+    const { getUserById } = useUser();
+    const { currentUser } = useAuth();
+    const user = getUserById(authorId);
 
-    // useEffect(() => {
-    //     setIsLoading(true);
-    //     API.users
-    //         .getById(authorId)
-    //         .then((data) => {
-    //             setUserToShow(data);
-    //             setIsLoading(false);
-    //             }
-    //         );
-    // }, []);
-
-    if (!isLoading) {
         return (
             <div className="bg-light card-body  mb-3">
                 <div className="row">
                     <div className="col">
                         <div className="d-flex flex-start ">
                             <img
-                                src={`https://avatars.dicebear.com/api/avataaars/${(
-                                    Math.random() + 1
-                                )
-                                    .toString(36)
-                                    .substring(7)}.svg`}
+                                src={user.image}
                                 className="rounded-circle shadow-1-strong me-3"
                                 alt="avatar"
                                 width="65"
@@ -46,14 +32,16 @@ function AddCommentForm({ authorId, time, text, onRemove, id }) {
                                 <div className="mb-4">
                                     <div className="d-flex justify-content-between align-items-center">
                                         <p className="mb-1 ">
-                                            {userToShow.name}
+                                            {user.name}
                                             <span className="small">
                                             {'-' + time}
                                         </span>
                                         </p>
-                                        <button className="btn btn-sm text-primary d-flex align-items-center">
-                                            <i className="bi bi-x-lg" onClick={() => onRemove(id)}></i>
-                                        </button>
+                                        {currentUser._id === authorId && (
+                                            <button className="btn btn-sm text-primary d-flex align-items-center">
+                                                <i className="bi bi-x-lg" onClick={() => onRemove(id)}></i>
+                                            </button>
+                                        ) }
                                     </div>
                                     <p className="small mb-0">{text}</p>
                                 </div>
@@ -63,9 +51,6 @@ function AddCommentForm({ authorId, time, text, onRemove, id }) {
                 </div>
             </div>
         );
-    } else {
-        return 'Loading...';
-    }
 }
 
 export default AddCommentForm;

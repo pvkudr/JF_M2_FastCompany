@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Comments from '../../ui/userMainPage/comments';
 import { useUser } from '../../../hooks/useUsers';
 import CommentsProvider from '../../../hooks/useComments';
+import { useProfAndQual } from '../../../hooks/useProfAndQual';
 
 UserMainPage.propTypes = {
     userId: PropTypes.string
@@ -13,16 +14,17 @@ UserMainPage.propTypes = {
 
 function UserMainPage({ userId }) {
     const { getUserById } = useUser();
+    const { isQualLoading } = useProfAndQual();
     const user = getUserById(userId);
     console.log('userMainPage', user);
 
-    if (user) {
+    if (user && !isQualLoading) {
         return (
             <div className="container">
                 <div className="row gutters-sm">
                     <div className="col-md-4 mb-3">
                         <UserCard user={user}/>
-                        <QualitiesCard qualities={user.qualities}/>
+                          <QualitiesCard qualities={user.qualities}/>
                         <MeetingCard meetings={user.completedMeetings}/>
                     </div>
                     <div className="col-md-8">

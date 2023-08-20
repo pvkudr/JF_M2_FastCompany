@@ -32,6 +32,7 @@ const CommentsProvider = ({ children }) => {
 
         try {
             const { content } = await commentService.create(comment);
+            setComments(prevState => [...prevState, content]);
             console.log('useComments_content', content);
         } catch (error) {
             errorCatcher(error);
@@ -48,10 +49,21 @@ const CommentsProvider = ({ children }) => {
             setIsCommLoading(false);
         }
     }
+    async function removeComment(commentId) {
+        try {
+            const { content } = await commentService.remove(commentId);
+            console.log('useComments_content_remove', content);
+            if (content === null) {
+                setComments(prevState => prevState.filter(comment => comment._id !== commentId));
+            }
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
 
     useEffect(() => {
         getComments();
-    }, []);
+    }, [userId]);
 
     function errorCatcher(error) {
         const { message } = error.response.data;
@@ -66,7 +78,7 @@ const CommentsProvider = ({ children }) => {
 
     return (
         <CommentsContext.Provider
-            value={{ comments, isCommLoading, createComment }}
+            value={{ comments, isCommLoading, createComment, removeComment }}
         >
             {children}
         </CommentsContext.Provider>

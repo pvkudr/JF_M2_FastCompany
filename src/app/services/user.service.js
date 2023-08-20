@@ -20,6 +20,11 @@ const userService = {
         // console.log('data from user_service', data);
         return data;
     },
+    update: async (payload) => {
+        const { data } = await httpService.patch(userEndpoint + localStorageService.getUserId(), payload);
+        return data;
+    },
+
     // todo :need?
     getUserById: async (userId) => {
         const { data } = await httpService.get(

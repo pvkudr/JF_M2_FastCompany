@@ -6,25 +6,14 @@ import { orderBy } from 'lodash';
 import { useComments } from '../../../hooks/useComments';
 
 function Comments() {
-    const { comments, createComment } = useComments();
-
-    // useEffect(() => {
-    //     api.comments
-    //         .fetchCommentsForUser(userId)
-    //         .then((data) => setComments(data));
-    // }, []);
+    const { comments, createComment, removeComment } = useComments();
 
     const handleSubmit = (data) => {
         createComment(data);
-        // api.comments
-        //     .add({ ...data, pageId: userId })
-        //     .then((data) => { setComments([...comments, data]); });
     };
 
     const handleRemoveComment = (id) => {
-        // api.comments
-        //     .remove(id)
-        //     .then((id) => setComments(comments.filter((x) => x._id !== id)));
+        removeComment(id);
     };
 
     const sortedComments = orderBy(comments, ['created_at'], ['desc']);

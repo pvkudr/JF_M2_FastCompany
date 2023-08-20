@@ -1,58 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
- import api from '../../api';
 import { validator } from '../../utils/validator';
 import TextField from '../common/form/textField';
 import SelectField from '../common/form/selectField';
 import RadioField from '../common/form/radioField';
 import MultiSelectField from '../common/form/multiSelectField';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 import BackButton from '../common/backButton';
+import { useProfAndQual } from '../../hooks/useProfAndQual';
+import { useAuth } from '../../hooks/useAuth';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
-const UserChangePage = ({ userId }) => {
+const UserChangePage = () => {
+    const [isLoading, setLoading] = useState(true);
+    const [data, setData] = useState();
+    const { professions, isProfLoading, qualities, getQualityList, isQualLoading } = useProfAndQual();
+    const { updateUserData, currentUser } = useAuth();
     const history = useHistory();
-    const [user, setUser] = useState({});
-    const [professions, setProfession] = useState();
-    const [qualities, setQualities] = useState({});
-    const [data, setData] = useState({});
+
+    console.log('userChangePage_', [currentUser, isQualLoading, data]);
+
+    // console.log('userChangePage_proff', professions);
+    // console.log('userChangePage_qual', qualities);
 
     useEffect(() => {
-        api.users.getById(userId).then((data) => setUser(data));
-        api.professions.fetchAll().then((data) => setProfession(data));
-        api.qualities.fetchAll().then((data) => setQualities(data));
-    }, []);
+        if (!isQualLoading && currentUser && !data) {
+            setData({
+                ...currentUser, qualities: getQualityList(currentUser.qualities)
+            });
+            console.log('userChangePage_data', data);
+            console.log('userChangePage_currentUser', currentUser);
+        }
+    }, [currentUser, isQualLoading, data]);
+    //
     useEffect(() => {
-        setData((prevState) => ({
-            ...prevState,
-            name: user.name,
-            email: user.email,
-            profession: user.profession,
-            sex: user.sex,
-            qualities: user.qualities ? user.qualities : []
-        }));
-    }, [user]);
+        if (data) {
+            setLoading(false);
+        }
+    }, [data]);
 
     // SUBMIT
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
         // form changed user
         // was not changed - {_id:, name:}, changed - {value:, label:}
-        if (data.qualities.length && data.qualities[0].label) {
-            data.qualities = data.qualities.map((quality) => ({ _id: quality.value, name: quality.label, color: quality.color }));
+
+        // if (data.qualities.length && data.qualities[0].label) {
+        // data.qualities = data.qualities.map((quality) => ({ _id: quality.value, name: quality.label, color: quality.color }));
+        // }
+        console.log('userchange_submit_before:', data);
+        let newData = { ...data };
+        if (data.qualities[0].value) {
+            newData = { ...data, qualities: data.qualities.map((q) => q.value) };
+        } else {
+            newData = { ...data, qualities: data.qualities.map((q) => q._id) };
         }
-        // was not changed - type= {}, changed - type = string
-        if (typeof (data.profession) === 'string') {
-            const getProfById = Object.values(professions).filter((profession) => {
-                return profession._id === data.profession;
-            });
-            data.profession = getProfById[0];
-        }
-        // update with changed user
-        api.users.update(userId, data).then((data) => {
-            history.push(`/users/${userId}`);
-            console.log(data);
-        });
+
+        // if (!data.qualities[0].label) {
+        //     newData = { ...data, qu alities: data.qualities.map((q) => q.value) };
+        // }
+        // // was not changed - type= {}, changed - type = string
+        // if (typeof (data.profession) === 'string') {
+        //     const getProfById = Object.values(professions).filter((profession) => {
+        //         return profession._id === data.profession;
+        //     });
+        //     data.profession = getProfById[0];
+        // }
+        // // update with changed user
+        console.log('userchange_submit:', newData);
+        updateUserData(newData);
+        history.push(`/users/${currentUser._id}`);
     };
 
     // FORM CHANGE
@@ -81,11 +97,11 @@ const UserChangePage = ({ userId }) => {
 
     useEffect(() => {
         validate();
-        console.log('errors', errors);
+        // console.log('errors', errors);
     }, [data]);
 
     const validate = () => {
-        if (data.name !== undefined && data.email !== undefined) {
+        if (!isLoading) {
             const errors = validator(data, validatorConfig);
             setErrors(errors);
             return Object.keys(errors).length === 0;
@@ -98,7 +114,7 @@ const UserChangePage = ({ userId }) => {
 
                 <div className="row">
                     <div className = 'col-md-6 offset-md-3 p-4 shadow'>
-                        {(Object.keys(user).length !== 0 && professions)
+                        {(!isQualLoading && !isProfLoading && !isLoading)
                             ? <form onSubmit={handleSubmit}>
                                 <TextField
                                     label = 'Name'
@@ -140,7 +156,7 @@ const UserChangePage = ({ userId }) => {
                                     options = {qualities}
                                     onChange = {handleChange}
                                     name = 'qualities'
-                                    defaultOption = {user.qualities}
+                                    defaultOption = {getQualityList(currentUser.qualities)}
                                     error={errors.qualities}
                                  />
 
@@ -159,8 +175,8 @@ const UserChangePage = ({ userId }) => {
     );
 };
 
-UserChangePage.propTypes = {
-    userId: PropTypes.string.isRequired
-};
+// UserChangePage.propTypes = {
+//     userId: PropTypes.string.isRequired
+// };
 
 export default UserChangePage;

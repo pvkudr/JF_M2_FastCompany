@@ -4,7 +4,8 @@ import { useProfAndQual } from '../../../hooks/useProfAndQual';
 
 const Qualities = function ({ qualities }) {
   const { isQualLoading, getQualityList } = useProfAndQual();
-  // console.log('qualities_from_qual', qualities);
+  console.log('qualities_from_qual', qualities);
+  // todo: getQualityList - dont need???? now its a proper list
   const qaul = getQualityList(qualities);
   // console.log('qaul', qaul);
   // console.log('isQualLoading', isQualLoading);

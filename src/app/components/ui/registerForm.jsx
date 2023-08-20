@@ -24,22 +24,15 @@ const RegisterForm = () => {
 
     const { professions, qualities, isQualLoading } = useProfAndQual();
 
-    // const [professions, setProfession] = useState();
-    // const [qualities, setQualities] = useState({});
-    //
-    // useEffect(() => {
-    //     api.professions.fetchAll().then((data) => setProfession(data));
-    //     api.qualities.fetchAll().then((data) => setQualities(data));
-    // }, []);
-
     // SUBMIT
     const { signUp } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
+        console.log('reg_form_data= ', data);
         const newData = { ...data, qualities: data.qualities.map((q) => q.value) }; // to match firebase datapattern
-        // console.log('newDataRegForm= ', newData);
+        console.log('reg_form_Newdata=  ', newData);
         try {
            await signUp(newData);
            history.push('/');

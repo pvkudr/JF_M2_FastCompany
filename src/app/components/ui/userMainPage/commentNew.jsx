@@ -33,9 +33,7 @@ function CommentNew({ onSubmit }) {
     const [errors, setErrors] = useState({});
 
     const validatorConfig = {
-        // name: {
-        //     isRequired: { message: 'Name is required' }
-        // },
+
         text: {
             isRequired: { message: 'Text is required' }
         }
