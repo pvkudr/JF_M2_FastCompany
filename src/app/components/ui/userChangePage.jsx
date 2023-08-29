@@ -8,13 +8,22 @@ import BackButton from '../common/backButton';
 import { useProfAndQual } from '../../hooks/useProfAndQual';
 import { useAuth } from '../../hooks/useAuth';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { getQualities, getQualitiesLoadingStatus } from '../../store/qualities';
+import { useSelector } from 'react-redux';
 
 const UserChangePage = () => {
+    // console.log('userChangePage_STORE', store);
+
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState();
-    const { professions, isProfLoading, qualities, getQualityList, isQualLoading } = useProfAndQual();
+    const { professions, isProfLoading, getQualityList } = useProfAndQual();
     const { updateUserData, currentUser } = useAuth();
     const history = useHistory();
+
+    const qualities = useSelector((state) => state.qualities);
+
+    const isQualLoading = useSelector(getQualitiesLoadingStatus());
+    console.log('userChangePage_qual', qualities, isQualLoading);
 
     console.log('userChangePage_', [currentUser, isQualLoading, data]);
 

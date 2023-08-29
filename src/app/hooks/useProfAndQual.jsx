@@ -14,6 +14,7 @@ const ProfessionProvider = ({ children }) => {
     const [professions, setProfessions] = useState([]);
     const [isProfLoading, setIsProfLoading] = useState(true);
     const [qualities, setQualities] = useState([]);
+
     const [isQualLoading, setIsQualLoading] = useState(true);
     const [error, setError] = useState(null);
 
