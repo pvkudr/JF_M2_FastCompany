@@ -4,21 +4,18 @@ import QualitiesCard from '../../ui/userMainPage/qualitiesCard';
 import MeetingCard from '../../ui/userMainPage/meetingCard';
 import PropTypes from 'prop-types';
 import Comments from '../../ui/userMainPage/comments';
-import { useUser } from '../../../hooks/useUsers';
-import CommentsProvider from '../../../hooks/useComments';
-import { useProfAndQual } from '../../../hooks/useProfAndQual';
+import { useSelector } from 'react-redux';
+import { getUserById } from '../../../store/users';
 
 UserMainPage.propTypes = {
     userId: PropTypes.string
 };
 
 function UserMainPage({ userId }) {
-    const { getUserById } = useUser();
-    const { isQualLoading } = useProfAndQual();
-    const user = getUserById(userId);
+    const user = useSelector(getUserById(userId));
     console.log('userMainPage', user);
 
-    if (user && !isQualLoading) {
+    if (user) {
         return (
             <div className="container">
                 <div className="row gutters-sm">
@@ -28,9 +25,7 @@ function UserMainPage({ userId }) {
                         <MeetingCard meetings={user.completedMeetings}/>
                     </div>
                     <div className="col-md-8">
-                        <CommentsProvider>
-                            <Comments/>
-                        </CommentsProvider>
+                        <Comments/>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import configFile from '../config.json';
 import localStorageService from './localStorage.service';
+import authService from './auth.service';
 
 // create axios instance
 // base URl will be used with all axios requests - get, put,..
@@ -23,13 +24,7 @@ http.interceptors.request.use(
             const expiresDate = localStorageService.getTokenExpiresDate();
             const refreshToken = localStorageService.getRefreshToken();
             if (refreshToken && expiresDate < Date.now()) {
-                const key = process.env.REACT_APP_FIREBASE_KEY;
-                const url = `https://securetoken.googleapis.com/v1/token?key=${key}`;
-                const { data } = await axios.post(url, {
-                    grant_type: 'refresh_token',
-                    refresh_token: refreshToken
-                    }
-                );
+                const { data } = await authService.refresh();
                 localStorageService.setTokens({
                     refreshToken: data.refresh_token,
                     idToken: data.id_token,

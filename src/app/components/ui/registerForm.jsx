@@ -5,13 +5,13 @@ import SelectField from '../common/form/selectField';
 import RadioField from '../common/form/radioField';
 import MultiSelectField from '../common/form/multiSelectField';
 import CheckBoxField from '../common/form/checkBoxField';
-import { useProfAndQual } from '../../hooks/useProfAndQual';
-import { useAuth } from '../../hooks/useAuth';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getQualities, getQualitiesLoadingStatus } from '../../store/qualities';
+import { getProfessions } from '../../store/professions';
+import { signUp } from '../../store/users';
 
 const RegisterForm = () => {
-    const history = useHistory();
-
+    const dispatch = useDispatch();
     const [data, setData] = useState({
         email: '',
         password: '',
@@ -22,10 +22,13 @@ const RegisterForm = () => {
         licence: false
     });
 
-    const { professions, qualities, isQualLoading } = useProfAndQual();
+    const professions = useSelector(getProfessions());
+
+    const qualities = useSelector(getQualities());
+    const isQualLoading = useSelector(getQualitiesLoadingStatus());
 
     // SUBMIT
-    const { signUp } = useAuth();
+    // const { signUp } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -33,13 +36,8 @@ const RegisterForm = () => {
         console.log('reg_form_data= ', data);
         const newData = { ...data, qualities: data.qualities.map((q) => q.value) }; // to match firebase datapattern
         console.log('reg_form_Newdata=  ', newData);
-        try {
-           await signUp(newData);
-           history.push('/');
-        } catch (error) {
-            // console.log('registerError', error);
-            setErrors(error);
-        }
+
+        dispatch(signUp(newData));
     };
 
     // FORM CHANGE

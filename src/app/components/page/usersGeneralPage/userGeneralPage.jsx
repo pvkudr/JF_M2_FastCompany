@@ -9,20 +9,22 @@ import ButtonClearAll from '../../ui/buttonClearAll';
 import _ from 'lodash';
 import SearchBar from '../../ui/searchBar';
 import { searchFilter } from '../../../utils/searchFilter';
-import { useUser } from '../../../hooks/useUsers';
-import { useProfAndQual } from '../../../hooks/useProfAndQual';
-import { useAuth } from '../../../hooks/useAuth';
+// import { useAuth } from '../../../hooks/useAuth';
+import { useSelector } from 'react-redux';
+import { getProfessions, getProfessionsLoadingStatus } from '../../../store/professions';
+import { getCurrentUserId, getUsers } from '../../../store/users';
 
 function UserGeneralPage() {
     // FETCH THE DATA - users except current user
-    const { currentUser } = useAuth();
+    // const { currentUser } = useAuth();
+    const currentUserId = useSelector(getCurrentUserId());
 
-    const fullUsers = useUser().users.filter((u) => u._id !== currentUser._id);
-    const [users, setUsers] = useState(useUser().users.filter((u) => u._id !== currentUser._id));
+    const fullUsers = useSelector(getUsers()).filter((u) => u._id !== currentUserId);
+    const [users, setUsers] = useState(useSelector(getUsers()).filter((u) => u._id !== currentUserId));
     console.log('useGeneral_users', fullUsers);
-    const [filteredUsers, setFilteredUsers] = useState(useUser().users.filter((u) => u._id !== currentUser._id));
-    const { professions, isProfLoading } = (useProfAndQual());
-
+    const [filteredUsers, setFilteredUsers] = useState(useSelector(getUsers()).filter((u) => u._id !== currentUserId));
+    const professions = useSelector(getProfessions());
+    const isProfLoading = useSelector(getProfessionsLoadingStatus());
     // useEffect(() => {
     //     // api.users.fetchAll().then((data) => setUsers(data));
     //     // setUsers(useUser());

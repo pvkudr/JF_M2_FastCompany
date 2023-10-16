@@ -5,35 +5,37 @@ import SelectField from '../common/form/selectField';
 import RadioField from '../common/form/radioField';
 import MultiSelectField from '../common/form/multiSelectField';
 import BackButton from '../common/backButton';
-import { useProfAndQual } from '../../hooks/useProfAndQual';
-import { useAuth } from '../../hooks/useAuth';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom';
-import { getQualities, getQualitiesLoadingStatus } from '../../store/qualities';
-import { useSelector } from 'react-redux';
+import { getQualities, getQualitiesLoadingStatus, getQualityList } from '../../store/qualities';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProfessions, getProfessionsLoadingStatus } from '../../store/professions';
+import { getCurrentUsertData, updateUser } from '../../store/users';
 
 const UserChangePage = () => {
     // console.log('userChangePage_STORE', store);
 
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState();
-    const { professions, isProfLoading, getQualityList } = useProfAndQual();
-    const { updateUserData, currentUser } = useAuth();
-    const history = useHistory();
+    const currentUser = useSelector(getCurrentUsertData());
+    const dispatch = useDispatch();
 
-    const qualities = useSelector((state) => state.qualities);
+    const professions = useSelector(getProfessions());
+    const isProfLoading = useSelector(getProfessionsLoadingStatus());
 
+    const qualities = useSelector(getQualities());
     const isQualLoading = useSelector(getQualitiesLoadingStatus());
-    console.log('userChangePage_qual', qualities, isQualLoading);
+    const qualitiesList = useSelector(getQualityList(currentUser.qualities));
 
-    console.log('userChangePage_', [currentUser, isQualLoading, data]);
+    // console.log('userChangePage_qual', qualities, isQualLoading);
 
-    // console.log('userChangePage_proff', professions);
+    // console.log('userChangePage_', [currentUser, isQualLoading, data]);
+
+    console.log('userChangePage_proff', professions);
     // console.log('userChangePage_qual', qualities);
 
     useEffect(() => {
         if (!isQualLoading && currentUser && !data) {
             setData({
-                ...currentUser, qualities: getQualityList(currentUser.qualities)
+                ...currentUser, qualities: qualitiesList
             });
             console.log('userChangePage_data', data);
             console.log('userChangePage_currentUser', currentUser);
@@ -47,7 +49,7 @@ const UserChangePage = () => {
     }, [data]);
 
     // SUBMIT
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate()) return;
         // form changed user
@@ -76,8 +78,7 @@ const UserChangePage = () => {
         // }
         // // update with changed user
         console.log('userchange_submit:', newData);
-        updateUserData(newData);
-        history.push(`/users/${currentUser._id}`);
+        dispatch(updateUser(newData));
     };
 
     // FORM CHANGE
@@ -165,7 +166,7 @@ const UserChangePage = () => {
                                     options = {qualities}
                                     onChange = {handleChange}
                                     name = 'qualities'
-                                    defaultOption = {getQualityList(currentUser.qualities)}
+                                    defaultOption = {qualitiesList}
                                     error={errors.qualities}
                                  />
 

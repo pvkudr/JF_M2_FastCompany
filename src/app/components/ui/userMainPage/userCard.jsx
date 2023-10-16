@@ -1,23 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../../hooks/useAuth';
-import { useProfAndQual } from '../../../hooks/useProfAndQual';
+import { useSelector } from 'react-redux';
+import { getProfessionById, getProfessionsLoadingStatus } from '../../../store/professions';
+import { getCurrentUserId } from '../../../store/users';
 
 UserCard.propTypes = {
 user: PropTypes.object
 };
 
 function UserCard({ user }) {
-    const { currentUser } = useAuth();
-    const { getProfessionById, isProfLoading } = useProfAndQual();
+    const currentUserId = useSelector(getCurrentUserId());
+    const isProfLoading = useSelector(getProfessionsLoadingStatus());
+
     // console.log('user_card', [currentUser, isProfLoading, getProfessionById(currentUser.profession)]);
 
     if (!isProfLoading) {
         return (
             <div className="card mb-3">
                 <div className="card-body">
-                    {currentUser._id === user._id &&
+                    {currentUserId === user._id &&
                         (<button className="position-absolute top-0 end-0 btn btn-light btn-sm">
                             <Link to={'/users/' + user._id + '/edit'}>
                                 <i className="bi bi-gear"></i>
@@ -35,7 +37,7 @@ function UserCard({ user }) {
                         />
                         <div className="mt-3">
                             <h4>{user.name}</h4>
-                              <p className="text-secondary mb-1">{getProfessionById(user.profession).name}</p>
+                              <p className="text-secondary mb-1">{useSelector(getProfessionById(user.profession)).name}</p>
                             <div className="text-muted">
                                 <i className="bi bi-caret-down-fill text-primary" role="button"></i>
                                 <i className="bi bi-caret-up text-secondary" role="button"></i>

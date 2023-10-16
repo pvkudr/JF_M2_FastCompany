@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useUser } from '../../../hooks/useUsers';
-import { useAuth } from '../../../hooks/useAuth';
+import { useSelector } from 'react-redux';
+import { getCurrentUserId, getUserById } from '../../../store/users';
 
 AddCommentForm.propTypes = {
     authorId: PropTypes.string,
@@ -12,9 +12,9 @@ AddCommentForm.propTypes = {
 };
 
 function AddCommentForm({ time, text, onRemove, id, authorId }) {
-    const { getUserById } = useUser();
-    const { currentUser } = useAuth();
-    const user = getUserById(authorId);
+    const currentUserId = useSelector(getCurrentUserId());
+    const user = useSelector(getUserById(authorId));
+    console.log('add_comment-=USER', user);
 
         return (
             <div className="bg-light card-body  mb-3">
@@ -37,7 +37,7 @@ function AddCommentForm({ time, text, onRemove, id, authorId }) {
                                             {'-' + time}
                                         </span>
                                         </p>
-                                        {currentUser._id === authorId && (
+                                        {currentUserId === authorId && (
                                             <button className="btn btn-sm text-primary d-flex align-items-center">
                                                 <i className="bi bi-x-lg" onClick={() => onRemove(id)}></i>
                                             </button>

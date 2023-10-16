@@ -2,28 +2,26 @@ import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/textField';
 import { validator } from '../../utils/validator';
 import CheckBoxField from '../common/form/checkBoxField';
-import { useAuth } from '../../hooks/useAuth';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAuthErrors, login } from '../../store/users';
 
 const LoginForm = () => {
     const [data, setData] = useState({ email: '', password: '', stayOn: true });
+    const loginError = useSelector(getAuthErrors());
     const history = useHistory();
-    // SUBMIT
 
-    const { signIn } = useAuth();
-    const handleSubmit = async (e) => {
+    // SUBMIT
+    const dispatch = useDispatch();
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate()) return;
         console.log('data_loginForm', data);
-        try {
-            await signIn(data);
-            history.push(history.location.state
-                ? history.location.state.from.pathname
-                : '/');
-        } catch (error) {
-            console.log('loginError', error);
-            setErrors(error);
-        }
+        const redirect = history.location.state
+            ? history.location.state.from.pathname
+            : '/';
+        dispatch(login({ payload: data, redirect }));
     };
 
     // FORM CHANGE
@@ -87,10 +85,12 @@ const LoginForm = () => {
                             Stay signed in
                         </CheckBoxField>
 
+                        {loginError && <p className = 'text-danger'> {loginError} </p>}
+
                         <button
                             type="submit"
                             className='btn btn-primary w-100 mx-auto'
-                            disabled={!(Object.keys(errors).length === 0)}
+                            disabled={!Object.keys(errors).length === 0}
                         >
                             Submit
                         </button>
